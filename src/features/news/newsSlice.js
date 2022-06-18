@@ -18,7 +18,9 @@ export const newsSlice = createSlice({
     },
     nextPage: (state) => {
       state.page += 1;
-      state.isLoadingMore = true;
+    },
+    resetPage: (state) => {
+      state.page = 1;
     },
     setLoadingMore: (state, action) => {
       state.isLoadingMore = action.payload;
@@ -40,6 +42,7 @@ export const newsSlice = createSlice({
   },
 });
 
-export const { addToNewsData, nextPage, setLoadingMore, setKeyword, setTotalResults, setSorting } = newsSlice.actions;
+export const { addToNewsData, nextPage, setLoadingMore, setKeyword, setTotalResults, setSorting, resetPage } =
+  newsSlice.actions;
 
 export default newsSlice.reducer;
