@@ -107,6 +107,10 @@ const Home = () => {
       case 'popularity':
         // Generate popularity data for news
         // Since news api doesn't include popularity data
+        // There might be times that popularity and relevance will show same order
+        // For example: 4 articles by relevance have all the same count (ex. 1) in the descending order of: A, B, C, D
+        // Coincidentally, 4 articles by popularity have this in order: A = 50, B = 40, C = 30, D = 20
+        // So it may look like nothing has change
         const withPopularityData = await Promise.all(newsData?.map((data) => {
           let rand = Math.random() * 100;
           rand = Math.floor(rand);
@@ -119,6 +123,10 @@ const Home = () => {
         break;
       case 'relevance':
         // Generate relevance data for news based on keyword
+        // There might be times that popularity and relevance will show same order
+        // For example: 4 articles by relevance have all the same count (ex. 1) in the descending order of: A, B, C, D
+        // Coincidentally, 4 articles by popularity have this in order: A = 50, B = 40, C = 30, D = 20
+        // So it may look like nothing has change
         const withRelevanceData = await Promise.all(newsData?.map((data) => {
           const stringCount = (str, ch) => {
             const strArray = str.split(' ');
