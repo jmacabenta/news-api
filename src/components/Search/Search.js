@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import debounce from 'lodash/debounce';
 import axios from 'axios';
 import {
-  addToNewsData,
+  setSearchResults,
   nextPage,
   setLoadingMore,
   setKeyword,
@@ -18,20 +18,20 @@ const apiKey = process.env.REACT_APP_NEWS_API_KEY;
 
 const Search = () => {
   const page = useSelector((state) => state.news.page);
-  const newsData = useSelector((state) => state.news.dataSource);
+  const newsData = useSelector((state) => state.news.searchResults);
   const isLoadingMore = useSelector((state) => state.news.isLoadingMore);
   const keyword = useSelector((state) => state.news.keyword);
   const totalDataResults = useSelector((state) => state.news.totalResults);
   const sorting = useSelector((state) => state.news.sorting);
   const dispatch = useDispatch();
-  const { isLoading, error, data } = useQuery('newsData', () =>
+  const { isLoading, error, data } = useQuery('searchResults', () =>
     fetch(`https://newsapi.org/v2/everything?q=${keyword}&sortBy=${sorting}&apiKey=${apiKey}`).then((res) => res.json())
   );
 
   useEffect(() => {
     const { articles, totalResults } = data || {};
-    dispatch(addToNewsData(articles));
-    dispatch(setTotalResults(totalResults));
+    dispatch(setSearchResults(articles || []));
+    dispatch(setTotalResults(totalResults || 0));
   }, [data, dispatch]);
 
   const handleChangeKeyword = async (val) => {
@@ -43,27 +43,20 @@ const Search = () => {
         const {
           data: { articles: newArticles, totalResults },
         } = response;
-        dispatch(addToNewsData(newArticles));
+        dispatch(setSearchResults(newArticles));
         dispatch(setTotalResults(totalResults));
       } catch (err) {
         console.log(err);
       }
-      dispatch(setKeyword(val));
     } else {
-      dispatch(addToNewsData([]));
+      dispatch(setSearchResults([]));
       dispatch(setTotalResults(0));
     }
+
+    dispatch(setKeyword(val));
   };
 
   const onChangeKeyword = debounce((ev) => handleChangeKeyword(ev.target.value), 500);
-
-  if (isLoading) {
-    return (
-      <div className="loading-container">
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -83,7 +76,7 @@ const Search = () => {
       const {
         data: { articles: newArticles },
       } = response;
-      dispatch(addToNewsData([...newsData, ...newArticles]));
+      dispatch(setSearchResults([...newsData, ...newArticles]));
       dispatch(nextPage());
       dispatch(setLoadingMore(false));
     } catch (err) {
@@ -101,7 +94,7 @@ const Search = () => {
       const {
         data: { articles: newArticles },
       } = response;
-      dispatch(addToNewsData(newArticles));
+      dispatch(setSearchResults(newArticles));
     } catch (err) {
       console.log(err);
     }
@@ -121,35 +114,43 @@ const Search = () => {
             <option value="relevancy">Relevant</option>
           </select>
         </div>
-        <div className="articles-section">
-          {newsData?.length > 0 ? (
-            newsData?.map((article, index) => {
-              const { title, urlToImage, description } = article || {};
-              return (
-                <div key={`${index}-${title}`} className="news-box">
-                  <div className="news-img">{urlToImage && <img alt="article-visual" src={urlToImage} />}</div>
-                  <div className="news-info">
-                    <h3>{title}</h3>
-                    {description && <p>{description}</p>}
-                    <Link to="/article" state={article}>
-                      READ FULL ARTICLE &gt;
-                    </Link>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <p className="noData">
-              {keyword ? 'No data found or API key has been exhausted.' : 'Enter a keyword to search'}
-            </p>
-          )}
-        </div>
-
-        {newsData && newsData.length < totalDataResults && (
-          <div className="load-more">
-            <div className="load-more-btn" onClick={handleLoadMore}>
-              {isLoadingMore ? 'Loading...' : 'Load more'}
+        {!isLoading ? (
+          <>
+            <div className="articles-section">
+              {newsData?.length > 0 ? (
+                newsData?.map((article, index) => {
+                  const { title, urlToImage, description } = article || {};
+                  return (
+                    <div key={`${index}-${title}`} className="news-box">
+                      <div className="news-img">{urlToImage && <img alt="article-visual" src={urlToImage} />}</div>
+                      <div className="news-info">
+                        <h3>{title}</h3>
+                        {description && <p>{description}</p>}
+                        <Link to="/article" state={article}>
+                          READ FULL ARTICLE &gt;
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="noData">
+                  {keyword ? 'No data found or API key has been exhausted.' : 'Enter a keyword to search'}
+                </p>
+              )}
             </div>
+
+            {newsData && newsData.length < totalDataResults && (
+              <div className="load-more">
+                <div className="load-more-btn" onClick={handleLoadMore}>
+                  {isLoadingMore ? 'Loading...' : 'Load more'}
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="loading-container">
+            <p>Loading...</p>
           </div>
         )}
       </div>

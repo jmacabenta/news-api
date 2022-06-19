@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
 import Article from './components/Article';
 import Search from './components/Search/Search';
+import './App.scss';
 
 const App = () => {
   return (

@@ -1,10 +1,18 @@
 .Article {
   margin: 30px 0 50px;
 
-  a {
+  span {
     display: inline-block;
     font-size: 14px;
     font-weight: 600;
+    cursor: pointer;
+    color: #39b5ed;
+    transition: color ease-out 0.3s;
+
+    &:hover {
+      color: #3b82f6;
+      transition: color ease-in 0.3s;
+    }
   }
 
   .article-header {

@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  dataSource: [],
+  topHeadlines: [],
+  searchResults: [],
   totalResults: 0,
   page: 1,
   isLoadingMore: false,
@@ -13,8 +14,11 @@ export const newsSlice = createSlice({
   name: 'news',
   initialState,
   reducers: {
-    addToNewsData: (state, action) => {
-      state.dataSource = action.payload;
+    setTopHeadlines: (state, action) => {
+      state.topHeadlines = action.payload;
+    },
+    setSearchResults: (state, action) => {
+      state.searchResults = action.payload;
     },
     nextPage: (state) => {
       state.page += 1;
@@ -42,7 +46,15 @@ export const newsSlice = createSlice({
   },
 });
 
-export const { addToNewsData, nextPage, setLoadingMore, setKeyword, setTotalResults, setSorting, resetPage } =
-  newsSlice.actions;
+export const {
+  setTopHeadlines,
+  setSearchResults,
+  nextPage,
+  setLoadingMore,
+  setKeyword,
+  setTotalResults,
+  setSorting,
+  resetPage,
+} = newsSlice.actions;
 
 export default newsSlice.reducer;

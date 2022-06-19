@@ -1,11 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import './Article.scss';
 
 const Article = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const data = location.state;
   const { source, author, title, description, urlToImage, publishedAt, content } = data || {};
   const { name: sourceName } = source || {};
@@ -14,7 +14,7 @@ const Article = () => {
     <div className="container">
       <div className="Article">
         <h1>Article</h1>
-        <Link to="/">&lt; Go back</Link>
+        <span onClick={() => navigate(-1)}>&lt; Go back</span>
         <div className="article-header">
           {urlToImage && <img alt="article-visual" src={urlToImage} />}
           <p>Source: {sourceName || 'N/A'}</p>
